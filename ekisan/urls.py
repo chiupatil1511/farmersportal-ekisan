@@ -74,4 +74,9 @@ urlpatterns = [
     path('rice/', views.rice, name='rice'),
     path('wheat/', views.wheat, name='wheat'),
     path('mainpro/',views.mainpro,name='mainpro'),
+    path('addtocart/',views.addtocart,name='addtocart'),
+    path('displaycart/',views.displaycart,name='displaycart'),
+    path('consumerlogin/', views.consumerlogin, name='consumerlogin'),
+    path('removefromcart/', views.removefromcart, name='removefromcart'),
+    path('pay/', views.pay, name='pay'),
 ]

@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 import pyrebase
 import random
@@ -210,8 +211,6 @@ def fsignin(request):
                     'det': details
                 }
                 print(details2)
-
-
                 return render(request, "AddItem1.html", details2)
             except:
                 return render(request, "AddItem1.html")
@@ -595,7 +594,199 @@ def mainpro(request):
     quantity = database.child('Added_Items').child(uid).child('Quantity').get().val()
     url = database.child('Added_Items').child(uid).child('url').get().val()
     fname = database.child('Added_Items').child(uid).child('fname').get().val()
-    return render(request,'product.html',{ 'proname': proname,'amount': amount,'quantity': quantity, 'url': url, 'fname': fname})
+
+    return render(request,'product.html',{ 'proname': proname,'amount': amount,'quantity': quantity, 'url': url, 'fname': fname, 'uid':uid})
+
+def addtocart(request):
+
+    curuser = authe.current_user
+    if curuser:
+        cid = curuser['localId']
+        uid = request.GET.get('z')
+        reqquant = request.POST.get('req')
+
+        proname = database.child('Added_Items').child(uid).child('Product_name').get().val()
+        amount = database.child('Added_Items').child(uid).child('Price').get().val()
+        quantity = database.child('Added_Items').child(uid).child('Quantity').get().val()
+        url = database.child('Added_Items').child(uid).child('url').get().val()
+        fname = database.child('Added_Items').child(uid).child('fname').get().val()
+
+        productdata = {
+            'Productname': proname,
+            'Price': amount,
+            'Requiredquantity':  reqquant,
+            'url': url,
+            'fname': fname,
+            'totalprice':int(amount) * int(reqquant),
+
+        }
+        database.child('Cart').child(cid).child(uid).set(productdata)
+        print(productdata)
+        return render(request, 'product.html',{'proname': proname, 'amount': amount,  'quantity': quantity,
+                                               'url': url, 'fname': fname,'uid': uid})
+    else:
+        mess = "You need to login"
+        return render(request,'consumerlogin.html',{'mess':mess})
+
+
+def displaycart(request):
+    curuser = authe.current_user
+
+    if curuser:
+        cid = curuser['localId']
+
+        try:
+            proid = database.child('Cart').child(cid).shallow().get().val()
+            products = []
+            for i in proid:
+                products.append(i)
+            details = {}
+            totamt = []
+            maxquant = {}
+            sum = 0
+            sum1 = 0
+            # p = 0
+            # print('maxquant', maxquant)
+            for i in products:
+                tamount = database.child('Cart').child(cid).child(i).child('totalprice').get().val()
+                sum = sum + tamount
+                det = database.child('Cart').child(cid).child(i).get().val()
+                maxquantallow = database.child('Added_Items').child(i).child('Quantity').get().val()
+                print('maxquantallow', maxquantallow)
+                # diction1 = dict(maxquantallow)
+                maxquant[i] = maxquantallow
+
+
+                # farmid = database.child('Cart').child(i).child('farmid').get().val()
+                # c = database.child('Farmer').child('Details').child(farmid).child('City').get().val()
+                print('maxquant', maxquant)
+                print(det)
+                diction = dict(det)
+                # diction['maxquant']=maxquantallow
+                details[i] = diction
+            sum1 = sum + 30
+
+
+            add = database.child('Consumer').child('Details').child(cid).child('Address').get().val()
+            city = database.child('Consumer').child('Details').child(cid).child('City').get().val()
+            pin = database.child('Consumer').child('Details').child(cid).child('Pin code').get().val()
+
+            details2 = {
+                'det': details,
+                'uid': products,
+                'sum': sum,
+                'sum1': sum1,
+                'add': add,
+                'city': city,
+                'pin': pin,
+                'mq': maxquant,
+            }
+            print(details2)
+            return render(request, 'cart.html', details2)
+        except:
+            return HttpResponse("No Product in Cart")
+    else:
+        mess = "You need to login"
+        return render(request, 'consumerlogin.html', {'mess': mess})
+
+def consumerlogin(request):
+    return render(request, 'consumerlogin.html')
+
+
+
+def removefromcart(request):
+
+    curuser = authe.current_user
+    cid = curuser['localId']
+    uid = request.GET.get('z')
+    database.child('Cart').child(cid).child(uid).remove()
+    try:
+        proid = database.child('Cart').child(cid).shallow().get().val()
+        products = []
+        for i in proid:
+            products.append(i)
+        details = {}
+        totamt = []
+        maxquant = {}
+        sum = 0
+        sum1 = 0
+        # p = 0
+        # print('maxquant', maxquant)
+        for i in products:
+            tamount = database.child('Cart').child(cid).child(i).child('totalprice').get().val()
+            sum = sum + tamount
+            det = database.child('Cart').child(cid).child(i).get().val()
+            maxquantallow = database.child('Added_Items').child(i).child('Quantity').get().val()
+            print('maxquantallow', maxquantallow)
+            # diction1 = dict(maxquantallow)
+            maxquant[i] = maxquantallow
+
+            # farmid = database.child('Cart').child(i).child('farmid').get().val()
+            # c = database.child('Farmer').child('Details').child(farmid).child('City').get().val()
+            print('maxquant', maxquant)
+            print(det)
+            diction = dict(det)
+            # diction['maxquant']=maxquantallow
+            details[i] = diction
+        sum1 = sum + 30
+
+        add = database.child('Consumer').child('Details').child(cid).child('Address').get().val()
+        city = database.child('Consumer').child('Details').child(cid).child('City').get().val()
+        pin = database.child('Consumer').child('Details').child(cid).child('Pin code').get().val()
+
+        details2 = {
+            'det': details,
+            'uid': products,
+            'sum': sum,
+            'sum1': sum1,
+            'add': add,
+            'city': city,
+            'pin': pin,
+            'mq': maxquant,
+        }
+
+        print(details2)
+        return render(request, 'cart.html', details2)
+    except:
+        return HttpResponse("No Product in Cart")
+
+    # return render(request, 'cart.html')
+
+
+def pay(request):
+    # lettersD = string.digits
+    # oid = (''.join(random.choice(lettersD) for i in range(3)))
+    # if request.method == POST:
+    amount = 50000
+    order_currency = 'INR'
+    client = razorpay.Client(
+        auth=('rzp_test_FATkxrQc0vE9vD', '3k03LzqTulSrgZzSIqMdHfHR'))
+    payment = client.order.create({'amount': amount, 'currency': 'INR', 'payment_capture': '1'})
+    curuser = authe.current_user
+    cid = curuser['localId']
+    keyid = 'rzp_test_ssmxVx39H1TlGF'
+    keySecret = 'Gtc2eutjvAiD3P0MSE51KkJ1'
+    import razorpay
+    client = razorpay.Client(auth=(keyid, keySecret))
+    data = {
+        "amount": 100 * 170,
+        "currency": "INR",
+        "receipt": "rcptid_11",
+        "notes": {
+            "name": "Shivani Patil",
+            "Payment_for": "For buying Veggies",
+        }
+    }
+    # order = client.order.create(data=data)
+    # print(order)
+    params_dict = {
+        'razorpay_order_id': '12122',
+        'razorpay_payment_id': '332',
+        'razorpay_signature': '23233'
+    }
+    client.utility.verify_payment_signature(params_dict)
+    return render(request, 'index.html')
+
 
 def crop(request):
     return render(request, 'crop.html')
@@ -737,4 +928,33 @@ def sd3(request):
 def sd4(request):
     return render(request, 'sd4.html')
 
-
+#
+# def cart(request):
+#     if request.method == POST:
+#     #     amount = 50000
+#     #     order_currency = 'INR'
+#     #     client = razorpay.Client(
+#     #             auth=('rzp_test_FATkxrQc0vE9vD','3k03LzqTulSrgZzSIqMdHfHR'))
+#     #     payment = client.order.create({'amount' :amount,'currency' :'INR','payment_capture' :'1'})
+#
+#         keyid = 'rzp_test_ssmxVx39H1TlGF'
+#         keySecret = 'Gtc2eutjvAiD3P0MSE51KkJ1'
+#         import razorpay
+#         client = razorpay.Client(auth=(keyid, keySecret))
+#         data = {
+#             "amount": 100 * 170,
+#             "currency": "INR",
+#             "receipt": "rcptid_11",
+#             "notes": {
+#                 "name": "Shivani Patil",
+#                 "Payment_for": "For buying Veggies",
+#             }
+#         }
+#         order = client.order.create(data=data)
+#         print(order)
+#         # {'id': 'order_H96ZpJVT3TPhQm', 'entity': 'order', 'amount': 10000, 'amount_paid': 0, 'amount_due': 10000,
+#         #  'currency': 'INR', 'receipt': 'rcptid_11', 'offer_id': None, 'status': 'created', 'attempts': 0,
+#         #  'notes': {'name': 'Shivani Patil', 'Payment_for': 'For buying Veggies'}, 'created_at': 1620653096}
+#
+#     return render(request, 'cart.html')
+#

@@ -217,7 +217,19 @@ margin-top:10%;
 	justify-content: space-between;
 	margin:100px auto 50px;
 }*/
-
+.bgcart {
+			background-color:none;
+		}
+		.bgcart:hover {
+			background-color:none;
+		}
+		.cartimg {
+			margin-top:-5px;
+			margin-left: 150px;
+			width: 55px;
+		    height: 55px;
+		    border-radius: 100px;
+		}
 /*------------single product details----------------------------------*/
 .single-products{
 	margin-top: 80px;
@@ -262,7 +274,6 @@ input:focus{
 	flex-basis:24%;
 	cursor: pointer;
 }
-
 
 /*--------related products-----------------------------------------------------------------*/
 @import url('normalize.css');
@@ -993,6 +1004,14 @@ table {
 		display: none;
 	}
 }
+.show {
+         -o-transition: opacity 3s;
+         -moz-transition: opacity 3s;
+         -webkit-transition: opacity 3s;
+         transition: opacity 3s;
+      opacity:1;
+    }
+    .hide{  opacity:0; transition: opacity 3s;}
 
 /*---------------------------------------foooter my foor----------------------------------------------------------------*/
 
@@ -1130,6 +1149,10 @@ width: 110px;
   height: 40px;
   border-radius: 35px;
 }
+#div2{
+<!--	margin-top:80px;-->
+	margin-left:800px;
+}
 
 
 
@@ -1142,10 +1165,11 @@ width: 110px;
 <section id="navbar">
 <div class="nav">
     <ul>
-        <li><img id='logoimg' src="{% static 'images/productdetail/aaaaa-removebg-preview.png'%}"></li>
-        <li id='textcss'><a href="home.html">Home</a></li>
-        <li id='textcss1'><a href="aboutus.html">About Us</a></li>
-        <li id='textcss2'><a href="contactUs.html">Contact Us</a></li>
+        <li><img id='logoimg' src="{% static 'images/lll.png' %}"></li>
+        <li id='textcss'><a href="/index/">Home</a></li>
+            <li id='textcss1'><a href="/about/">About Us</a></li>
+            <li id='textcss2'><a href="/contact/">Contact Us</a></li>
+
         <li id="gtrans">
             <div id="google_translate_element"></div>
 
@@ -1158,11 +1182,17 @@ width: 110px;
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
         </li>
+		<li class="bgcart">
+				<a href="/displaycart/"><img  class='cartimg' src="{% static 'images/cart1.png' %}"></a>
+            </li>
     </ul>
 </div>
 </section>
-
+<div id="div2" style="background-color: teal; color:white; font-size: 20px; height:30px; width: 200px; font-weight: bold; padding:10px 20px 5px 20px; " class="hide">
+				 <i class="fal fa-check-circle"></i> Product added to Cart
+</div>
 <!-- ------------------single product detail---------------------------------------------------- -->
+
 <div id="single-products">
 <div class="small-container single-products">
 	<div class="row">
@@ -1186,10 +1216,22 @@ width: 110px;
 		<div class="col-2">
 			<p>Product Name</p>
 			<h1>{{ proname }}</h1>
-			<p>Price:</p><h4>Rs. :{{amount}}</h4>
+			<p>Price:</p><h4>₹. :{{ amount }}</h4>
             <p>Max Quantity:</p><h4> {{ quantity }} </h4>
-			<p>Quantity:</p><input type="number" value="1" min="1">kg
-			<a href="" class="btn">Add to cart</a>
+			<form id="myform" method="post" action="/addtocart/?z={{uid}}">
+				 {% csrf_token %}
+				<p>Quantity:</p><input type="number" value="1" name="req"  min="1" max="{{ quantity }}" required >kg
+				<div id="div1" class="show">
+<!--					<a href="/addtocart/?z={{uid}}" id="sub" class="btn" >Add to Cart</a>-->
+					<input type="submit" onclick="/addtocart/" value="Add to cart">
+				</div>
+<!--onclick="document.getElementById('myform').submit()"-->
+			</form>
+			<script>
+			document.getElementById("sub").onclick = function() {
+				document.getElementById("myform").submit();
+			}
+			</script>
 
 			<h3>Farmer details<i class="fa fa-indent"></i></h3><br>
 			<div class="column1">
@@ -1206,6 +1248,15 @@ width: 110px;
 	</div>
 </div>
 </div>
+ <script>
+	 function ShowSecond()
+    {
+      var div2 = document.getElementById("div2");
+      div2.className="show";
+      setTimeout(function() { div2.className="hide"; }, 10000);
+
+    }
+ </script>
 <!-- -------------title-------------------------------------------------------- -->
 
 <div  class="small-container">
