@@ -752,40 +752,40 @@ def removefromcart(request):
 
     # return render(request, 'cart.html')
 
-
-def pay(request):
-    # lettersD = string.digits
-    # oid = (''.join(random.choice(lettersD) for i in range(3)))
-    # if request.method == POST:
-    amount = 50000
-    order_currency = 'INR'
-    client = razorpay.Client(
-        auth=('rzp_test_FATkxrQc0vE9vD', '3k03LzqTulSrgZzSIqMdHfHR'))
-    payment = client.order.create({'amount': amount, 'currency': 'INR', 'payment_capture': '1'})
-    curuser = authe.current_user
-    cid = curuser['localId']
-    keyid = 'rzp_test_ssmxVx39H1TlGF'
-    keySecret = 'Gtc2eutjvAiD3P0MSE51KkJ1'
-    import razorpay
-    client = razorpay.Client(auth=(keyid, keySecret))
-    data = {
-        "amount": 100 * 170,
-        "currency": "INR",
-        "receipt": "rcptid_11",
-        "notes": {
-            "name": "Shivani Patil",
-            "Payment_for": "For buying Veggies",
-        }
-    }
-    # order = client.order.create(data=data)
-    # print(order)
-    params_dict = {
-        'razorpay_order_id': '12122',
-        'razorpay_payment_id': '332',
-        'razorpay_signature': '23233'
-    }
-    client.utility.verify_payment_signature(params_dict)
-    return render(request, 'index.html')
+#
+# def pay(request):
+#     # lettersD = string.digits
+#     # oid = (''.join(random.choice(lettersD) for i in range(3)))
+#     # if request.method == POST:
+#     amount = 50000
+#     order_currency = 'INR'
+#     client = razorpay.Client(
+#         auth=('rzp_test_FATkxrQc0vE9vD', '3k03LzqTulSrgZzSIqMdHfHR'))
+#     payment = client.order.create({'amount': amount, 'currency': 'INR', 'payment_capture': '1'})
+#     curuser = authe.current_user
+#     cid = curuser['localId']
+#     keyid = 'rzp_test_ssmxVx39H1TlGF'
+#     keySecret = 'Gtc2eutjvAiD3P0MSE51KkJ1'
+#     import razorpay
+#     client = razorpay.Client(auth=(keyid, keySecret))
+#     data = {
+#         "amount": 100 * 170,
+#         "currency": "INR",
+#         "receipt": "rcptid_11",
+#         "notes": {
+#             "name": "Shivani Patil",
+#             "Payment_for": "For buying Veggies",
+#         }
+#     }
+#     # order = client.order.create(data=data)
+#     # print(order)
+#     params_dict = {
+#         'razorpay_order_id': '12122',
+#         'razorpay_payment_id': '332',
+#         'razorpay_signature': '23233'
+#     }
+#     client.utility.verify_payment_signature(params_dict)
+#     return render(request, 'index.html')
 
 
 def crop(request):
