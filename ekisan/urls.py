@@ -78,5 +78,7 @@ urlpatterns = [
     path('displaycart/',views.displaycart,name='displaycart'),
     path('consumerlogin/', views.consumerlogin, name='consumerlogin'),
     path('removefromcart/', views.removefromcart, name='removefromcart'),
-    path('pay/', views.pay, name='pay'),
+    path('razor/',views.razor,name='razor'),
+    path('success/',views.success,name='success'),
+    # path('email/',views.email,name='email'),
 ]
